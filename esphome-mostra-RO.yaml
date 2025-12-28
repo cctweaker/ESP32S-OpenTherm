@@ -1,0 +1,182 @@
+esphome:
+  name: opentherm
+  friendly_name: OpenTherm
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+  baud_rate: 0
+
+api:
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "OpenTherm Fallback Hotspot"
+
+
+
+# setari specifice OpenTherm incep aici
+# informatii suplimentare sunt disponibile aici: https://esphome.io/components/opentherm/
+# Numarul senzorilor disponibili difera in functie de producatorul centralei termice si cum a implementat protocolul OpenTherm.
+
+opentherm:
+  in_pin: 26 # sau 22, in functie de jumperul de pe spatele PCB
+  out_pin: 25 # sau 21
+
+sensor:
+  # informatii despre centrala, valori fixe si senzori
+  # nu toate CT au toti senzorii disponibili pentru OT
+  # dupa prima instalare puteti comenta senzorii care nu sunt
+  # populati cu valori sau pe cei info care nu se schimba niciodata
+  - platform: opentherm
+    rel_mod_level:
+      name: "modulație"
+    ch_pressure:
+      name: "presiune circuit încălzire"
+    dhw_flow_rate:
+      name: "debit ACM"
+    t_boiler:
+      name: "temperatură lucru"
+    t_dhw:
+      name: "temperatură ACM"
+    t_outside:
+      name: "temperatură exterior"
+    t_ret:
+      name: "temperatură retur"
+    t_storage:
+      name: "temperatura boiler intern"
+    t_collector:
+      name: "temperatura colector solar"
+    t_flow_ch2:
+      name: "temperatura circuit încălzire 2"
+    t_dhw2:
+      name: "temperatură ACM 2"
+    t_exhaust:
+      name: "temperatură gaze arse"
+    fan_speed:
+      name: "turație ventilator"
+    fan_speed_setpoint:
+      name: "necesar turație ventilator"
+    flame_current:
+      name: "curent flacără (µA)"
+    burner_starts:
+      name: "porniri arzător"
+    ch_pump_starts:
+      name: "porniri pompă recirculare"
+    dhw_pump_valve_starts:
+      name: "porniri pompă/vană ACM"
+    dhw_burner_starts:
+      name: "porniri arzător pt. ACM"
+    burner_operation_hours:
+      name: "ore funcționare arzător"
+    ch_pump_operation_hours:
+      name: "ore funcționare pompă recirculare"
+    dhw_pump_valve_operation_hours:
+      name: "ore funcționare pompă/vană ACM"
+    dhw_burner_operation_hours:
+      name: "ore funcționare arzător pt ACM"
+
+
+binary_sensor:
+  - platform: opentherm
+    fault_indication:
+      name: "eroare"
+    ch_active:
+      name: "încălzire activă"
+    dhw_active:
+      name: "ACM activă"
+    flame_on:
+      name: "flacără activă"
+    cooling_active:
+      name: "răcire activă"
+    ch2_active:
+      name: "încălzire circuit 2 activă"
+    diagnostic_indication:
+      name: "diagnostic"
+    electricity_production:
+      name: "producție curent"
+    dhw_present:
+      name: "CT cu funție ACM"
+    control_type_on_off:
+      name: "control cu termostat clasic"
+    cooling_supported:
+      name: "CT cu funcție răcire"
+    dhw_storage_tank:
+      name: "CT cu boiler ACM"
+    controller_pump_control_allowed:
+      name: "cotrol pompă recirculare permis"
+    ch_2_present:
+      name: "funcție circuit 2 încălzire disponibilă"
+    service_request:
+      name: "cerere service"
+    lockout_reset:
+      name: "resetare eroare"
+    low_water_pressure:
+      name: "presiune apă scăzută"
+    flame_fault:
+      name: "eroare gaz/flacără"
+    air_pressure_fault:
+      name: "eroare presiune aer"
+    water_over_temperature_fault:
+      name: "eroare depășire temperatură apă"
+
+switch:
+  - platform: opentherm
+    ch_enable:
+      name: "încălzire activă"
+    # ch2_active:
+    #   name: "zona 2 activă"
+    dhw_enable:
+      name: "ACM activă"
+    # otc_active:
+    #   name: "OTC activă"
+    # OTC activeaza functionarea dupa o curba de temperatura
+    # la CT cu senzor exterior de temperatura
+    summer_mode_active:
+      name: "mod vară activ"
+    dhw_block:
+      name: "blocare ACM"
+    
+
+number:
+  - platform: opentherm
+    t_set:
+      name: "temperatură TUR"
+      min_value: 20.0
+      max_value: 50.0
+      step: 1
+      mode: box
+      restore_value: true
+    t_dhw_set:
+      name: "temperatură ACM"
+      min_value: 20.0
+      max_value: 50.0
+      step: 1
+      mode: box
+      restore_value: true
+    max_t_set:
+      name: "temperatură TUR maximă"
+      min_value: 20.0
+      max_value: 60.0
+      step: 1
+      mode: box
+      restore_value: true
+    max_rel_mod_level:
+      name: "modulație maximă"
+      min_value: 0.0
+      max_value: 100.0
+      step: 1
+      mode: box
+      restore_value: true
+
+button:
+  - platform: restart
+    name: "Restart modul OT"
