@@ -1,5 +1,3 @@
-#ESP32S-OpenTherm
-
 OpenTherm compatible hardware for home automation. It includes all the hardware needed for OpenTherm communication.
 Based on the ESP32-S module with external WiFi antenna. Simply connect to OT terminals and power.
 
