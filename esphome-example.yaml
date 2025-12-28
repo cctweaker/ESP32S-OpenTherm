@@ -1,0 +1,179 @@
+esphome:
+  name: opentherm
+  friendly_name: OpenTherm
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+# Enable logging
+logger:
+  baud_rate: 0
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  ap:
+    ssid: "OpenTherm Fallback Hotspot"
+
+
+
+# OpenTherm specific settings start here
+# extra info can be found here: https://esphome.io/components/opentherm/
+# number of available sensors, binary sensors, switches and numerical values depend on the boiler's manufacturer implementation of OpenTherm
+
+
+opentherm:
+  in_pin: 26
+  out_pin: 25
+
+sensor:
+  - platform: opentherm
+    rel_mod_level:
+      name: "Maximum relative modulation level"
+    ch_pressure:
+      name: "Water pressure in CH circuit"
+    dhw_flow_rate:
+      name: "Water flow rate in DHW circuit"
+    t_boiler:
+      name: "Boiler water temperature"
+    t_dhw:
+      name: "DHW temperature"
+    t_outside:
+      name: "Outside temperature"
+    t_ret:
+      name: "Return water temperature"
+    t_storage:
+      name: "Solar storage temperature"
+    t_collector:
+      name: "Solar collector temperature"
+    t_flow_ch2:
+      name: "Flow water temperature CH2 circuit"
+    t_dhw2:
+      name: "Domestic hot water temperature 2"
+    t_exhaust:
+      name: "Boiler exhaust temperature"
+    fan_speed:
+      name: "Boiler fan speed"
+    fan_speed_setpoint:
+      name: "Boiler fan speed setpoint"
+    flame_current:
+      name: "Boiler flame current (µA)"
+    burner_starts:
+      name: "Number of starts burner"
+    ch_pump_starts:
+      name: "Number of starts CH pump"
+    dhw_pump_valve_starts:
+      name: "Number of starts DHW pump/valve"
+    dhw_burner_starts:
+      name: "Number of starts burner during DHW mode"
+    burner_operation_hours:
+      name: "Burner operation hours"
+    ch_pump_operation_hours:
+      name: "CH pump operation hours"
+    dhw_pump_valve_operation_hours:
+      name: "DHW pump/valve operation hours"
+    dhw_burner_operation_hours:
+      name: "DHW burner operation hours"
+
+
+binary_sensor:
+  - platform: opentherm
+    fault_indication:
+      name: "Boiler fault indication"
+    ch_active:
+      name: "Central Heating active"
+    dhw_active:
+      name: "Domestic Hot Water active"
+    flame_on:
+      name: "Boiler Flame on"
+    cooling_active:
+      name: "Cooling active"
+    ch2_active:
+      name: "Central Heating 2 active"
+    diagnostic_indication:
+      name: "Diagnostic event"
+    electricity_production:
+      name: "Electricity production"
+    dhw_present:
+      name: "DHW present"
+    control_type_on_off:
+      name: "Control type is on/off"
+    cooling_supported:
+      name: "Cooling supported"
+    dhw_storage_tank:
+      name: "DHW storage tank"
+    controller_pump_control_allowed:
+      name: "Controller pump control allowed"
+    ch_2_present:
+      name: "CH2 present"
+    service_request:
+      name: "Service required"
+    lockout_reset:
+      name: "Lockout Reset"
+    low_water_pressure:
+      name: "Low water pressure"
+    flame_fault:
+      name: "Flame fault"
+    air_pressure_fault:
+      name: "Air pressure fault"
+    water_over_temperature_fault:
+      name: "Water overtemperature"
+
+switch:
+  - platform: opentherm
+    ch_enable:
+      name: "Central Heating enable"
+    # ch2_active:
+    #   name: "Central Heating 2 enable"
+    dhw_enable:
+      name: "Domestic Hot Water enable"
+    # otc_active:
+    #   name: "Outside temperature compensation enable"
+    summer_mode_active:
+      name: "Summer mode enable"
+    dhw_block:
+      name: "Block DHW"
+    
+
+number:
+  - platform: opentherm
+    t_set:
+      name: "CH setpoint"
+      min_value: 20.0
+      max_value: 60.0
+      step: 1
+      mode: box
+      restore_value: true
+    t_dhw_set:
+      name: "DHW setpoint"
+      min_value: 20.0
+      max_value: 50.0
+      step: 1
+      mode: box
+      restore_value: true
+    max_t_set:
+      name: "Maximum CH setpoint"
+      min_value: 20.0
+      max_value: 60.0
+      step: 1
+      mode: box
+      restore_value: true
+    max_rel_mod_level:
+      name: "Maximum relative modulation level"
+      min_value: 0.0
+      max_value: 100.0
+      step: 1
+      mode: box
+      restore_value: true
+
+button:
+  - platform: restart
+    name: "Restart OT (ESP) module"
